@@ -64,4 +64,31 @@ app.post("/calander/:courseId" , authmiddleware ,  async (req , res)=>{
     })
 })
 
+app.get("/courses" , authmiddleware ,  async (req , res)=>{
+    const userId = req.userId;
+
+    const course = await prismaclient.course.findMany({
+        where:{
+            purchase:{
+                some:{
+                    userId
+                }
+            }
+        },
+        select:{
+            id:true,
+            slug:true,
+            calanderNotionId:true,
+            title:true
+        }
+    })
+
+   
+    if(course.length === 0){
+        return res.send("NO courses found for this user ")
+    }
+
+    return res.json(course);
+})
+
 app.listen(process.env.PORT || 3000)
